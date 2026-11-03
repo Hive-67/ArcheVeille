@@ -6,7 +6,8 @@ Lancé par .github/workflows/releve.yml. Bibliothèque standard de Python seulem
 
 Écrit deux fichiers dans donnees/ :
 - releve.json : le dernier relevé (total, détail par région et par modèle, la liste) ;
-- historique.json : un total par relevé, sur 30 jours au plus.
+- historique.json : un total par relevé, sur 30 jours au plus. « complet » dit si
+  tous les types ont répondu : seuls les relevés complets se comparent entre eux.
 """
 import json
 import os
@@ -17,9 +18,10 @@ from datetime import datetime, timedelta, timezone
 
 API = "https://api.adsb.lol/v2/type/"
 UA = "ArcheVeille/1.0 (+https://github.com/Hive-67/ArcheVeille)"
-PAUSE = 1.2          # secondes entre deux requêtes : on ne mitraille pas un service gratuit
+PAUSE = 2.5          # secondes entre deux requêtes : adsb.lol refuse les rafales (erreur 429)
 DELAI = 20           # secondes d'attente au plus pour une réponse
 HISTO_JOURS = 30     # l'historique garde 30 jours, pas plus
+BUDGET = 330         # secondes au plus pour une passe : le workflow coupe à 8 minutes
 SOURCE = {"nom": "adsb.lol", "lien": "https://adsb.lol", "licence": "ODbL"}
 
 ICI = os.path.dirname(os.path.abspath(__file__))
@@ -62,10 +64,10 @@ def region(lat, lon):
 
 
 def demander(code):
-    """Les avions d'un type, deux essais au plus."""
+    """Les avions d'un type. Si adsb.lol dit « trop de requêtes » (429), on attend et on réessaie."""
     req = urllib.request.Request(API + code, headers={"User-Agent": UA, "Accept": "application/json"})
     derniere = None
-    for essai in range(2):
+    for essai in range(3):
         try:
             with urllib.request.urlopen(req, timeout=DELAI) as r:
                 donnees = json.load(r)
@@ -73,9 +75,18 @@ def demander(code):
             if not isinstance(ac, list):
                 raise ValueError("réponse sans liste d'avions : " + str(donnees.get("msg"))[:80])
             return ac
+        except urllib.error.HTTPError as e:
+            derniere = e
+            attente = 10 * (essai + 1)
+            if e.code == 429:
+                try:
+                    attente = max(attente, min(int(e.headers.get("Retry-After", 0)), 60))
+                except (TypeError, ValueError):
+                    pass
+            time.sleep(attente)
         except (urllib.error.URLError, ValueError, OSError) as e:
             derniere = e
-            time.sleep(3)
+            time.sleep(5)
     raise RuntimeError(f"{code} : {derniere}")
 
 
@@ -131,7 +142,11 @@ def main():
     vus = {}
     echecs = []
     codes = list(MODELE)
+    depart = time.monotonic()
     for i, code in enumerate(codes):
+        if time.monotonic() - depart > BUDGET:
+            echecs.append(f"{code} : passe trop longue, type sauté")
+            continue
         if i:
             time.sleep(PAUSE)
         try:
@@ -176,7 +191,7 @@ def main():
 
     tete = {
         "maj": iso(debut),
-        "statut": "ok",
+        "statut": "ok" if not echecs else "partiel",
         "erreur": None,
         "total": len(avions),
         "regions": par_region,
@@ -190,7 +205,7 @@ def main():
     histo = lire(HISTORIQUE, [])
     if not isinstance(histo, list):
         histo = []
-    histo.append({"t": iso(debut), "total": len(avions), **par_region})
+    histo.append({"t": iso(debut), "total": len(avions), **par_region, "complet": not echecs})
     limite = iso(debut - timedelta(days=HISTO_JOURS))
     histo = [h for h in histo if isinstance(h, dict) and h.get("t", "") >= limite]
     ecrire_lignes(HISTORIQUE, None, None, histo)
