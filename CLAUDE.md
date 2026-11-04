@@ -6,10 +6,10 @@ Lis d'abord `regles-communes.md` et `profil.md` du dépôt `Hive-67/LaRuche`, br
 
 ## Le projet
 
-- Ce que c'est : le robot de la Veille d'**Arche** (produit `outils/arche` de `Hive-67/HiveTools`). Toutes les 15 minutes, une GitHub Action lance `releve.py`, qui demande à adsb.lol les avions d'affaires en vol, les compte et range le relevé dans `donnees/`. La page Veille d'Arche lit ces fichiers : le navigateur n'a pas le droit d'appeler adsb.lol directement. Plus tard, c'est lui qui enverra l'alerte (`echanges/outils/arche/a-faire.md` de HiveTools, point 15).
+- Ce que c'est : le robot de la Veille d'**Arche** (`Hive-67/Arche`, branche `chantier` ; avant le 04/11/2026, produit `outils/arche` de HiveTools). Toutes les 15 minutes, une GitHub Action lance `releve.py`, qui demande à adsb.lol les avions d'affaires en vol, les compte et range le relevé dans `donnees/`. La page Veille d'Arche lit ces fichiers : le navigateur n'a pas le droit d'appeler adsb.lol directement. Plus tard, c'est lui qui enverra l'alerte (`projet/a-faire.md` d'Arche, point 15).
 - Dépôt **public**, créé par Hive le 03/11/2026 : Arche lit le relevé sans clé, et les Actions y sont gratuites. Rien de personnel, jamais.
 - Branche de travail : `main`. Ce dépôt n'est relié à aucun site Netlify : pas de PUBLIE, pas de crédits en jeu.
-- La mémoire de ce dépôt vit dans le canal d'Arche (`echanges/outils/arche/` de HiveTools, branche `outils/arche`) : il n'a pas de dossier `projet/`. Ses ordres vont dans `ordres/` ici.
+- La mémoire de ce dépôt vit dans `projet/` d'Arche (`Hive-67/Arche`, branche `chantier`) : il n'a pas de dossier `projet/`. Hors système : seul ce `CLAUDE.md` fait foi (`profil.md` de LaRuche, les dépôts). Ses ordres vont dans `ordres/` ici.
 - Le workflow `.github/workflows/releve.yml` ne peut être écrit que par Hive lui-même : GitHub refuse les fichiers de workflow aux outils connectés. Pour le changer, lui donner le texte complet à coller.
 
 ## Règles propres au projet
