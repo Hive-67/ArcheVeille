@@ -21,13 +21,14 @@ UA = "ArcheVeille/1.0 (+https://github.com/Hive-67/ArcheVeille)"
 PAUSE = 2.5          # secondes entre deux requêtes : adsb.lol refuse les rafales (erreur 429)
 DELAI = 20           # secondes d'attente au plus pour une réponse
 HISTO_JOURS = 30     # l'historique garde 30 jours, pas plus
-BUDGET = 330         # secondes au plus pour une passe : le workflow coupe à 8 minutes
+BUDGET = 300         # secondes au plus pour une passe, attentes comprises : le workflow coupe à 8 minutes
 SOURCE = {"nom": "adsb.lol", "lien": "https://adsb.lol", "licence": "ODbL"}
 
 ICI = os.path.dirname(os.path.abspath(__file__))
 DOSSIER = os.path.join(ICI, "donnees")
 RELEVE = os.path.join(DOSSIER, "releve.json")
 HISTORIQUE = os.path.join(DOSSIER, "historique.json")
+FIN = [None]         # heure (time.monotonic) où la passe doit s'arrêter
 
 # Les avions d'affaires, par leur code de type OACI.
 # Source : OACI, Doc 8643 « Aircraft Type Designators ». Un code qui ne répond rien ne gêne pas.
@@ -63,13 +64,25 @@ def region(lat, lon):
     return "reste_du_monde"
 
 
+def reste():
+    """Secondes qui restent avant la fin de la passe."""
+    return FIN[0] - time.monotonic() if FIN[0] else DELAI
+
+
+def attendre(secondes):
+    time.sleep(max(0, min(secondes, reste())))
+
+
 def demander(code):
-    """Les avions d'un type. Si adsb.lol dit « trop de requêtes » (429), on attend et on réessaie."""
+    """Les avions d'un type. Si adsb.lol dit « trop de requêtes » (429), on attend et on réessaie,
+    sans jamais dépasser la fin de la passe."""
     req = urllib.request.Request(API + code, headers={"User-Agent": UA, "Accept": "application/json"})
     derniere = None
     for essai in range(3):
+        if reste() < 3:
+            break
         try:
-            with urllib.request.urlopen(req, timeout=DELAI) as r:
+            with urllib.request.urlopen(req, timeout=max(3, min(DELAI, reste()))) as r:
                 donnees = json.load(r)
             ac = donnees.get("ac")
             if not isinstance(ac, list):
@@ -83,11 +96,11 @@ def demander(code):
                     attente = max(attente, min(int(e.headers.get("Retry-After", 0)), 60))
                 except (TypeError, ValueError):
                     pass
-            time.sleep(attente)
+            attendre(attente)
         except (urllib.error.URLError, ValueError, OSError) as e:
             derniere = e
-            time.sleep(5)
-    raise RuntimeError(f"{code} : {derniere}")
+            attendre(5)
+    raise RuntimeError(f"{code} : {derniere or 'passe trop longue'}")
 
 
 def en_vol(a):
@@ -142,13 +155,13 @@ def main():
     vus = {}
     echecs = []
     codes = list(MODELE)
-    depart = time.monotonic()
+    FIN[0] = time.monotonic() + BUDGET
     for i, code in enumerate(codes):
-        if time.monotonic() - depart > BUDGET:
+        if reste() < 3:
             echecs.append(f"{code} : passe trop longue, type sauté")
             continue
         if i:
-            time.sleep(PAUSE)
+            attendre(PAUSE)
         try:
             for a in demander(code):
                 if en_vol(a) and a.get("hex"):
