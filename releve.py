@@ -29,10 +29,10 @@ API = "https://api.adsb.lol/v2/type/"
 API_MIL = "https://api.adsb.lol/v2/mil"     # tous les avions marqués militaires
 API_PIA = "https://api.adsb.lol/v2/pia"     # tous les avions à adresse de remplacement (PIA)
 UA = "ArcheVeille/1.0 (+https://github.com/Hive-67/ArcheVeille)"
-PAUSE = 2.5          # secondes entre deux requêtes : adsb.lol refuse les rafales (erreur 429)
+PAUSE = 3            # secondes entre deux requêtes : adsb.lol refuse les rafales (erreur 429)
 DELAI = 20           # secondes d'attente au plus pour une réponse
 HISTO_JOURS = 30     # l'historique garde 30 jours, pas plus
-BUDGET = 300         # secondes au plus pour une passe, attentes comprises : le workflow coupe à 8 minutes
+BUDGET = 420         # secondes au plus pour une passe, attentes comprises : le workflow coupe à 8 minutes
 SOURCE = {"nom": "adsb.lol", "lien": "https://adsb.lol", "licence": "ODbL"}
 
 ICI = os.path.dirname(os.path.abspath(__file__))
@@ -197,12 +197,32 @@ def main():
     FIN[0] = time.monotonic() + BUDGET
     extras_echecs = []
 
-    # 1. Les militaires et les anonymes : une demande chacun, faites d'abord.
+    # 1. Les jets privés, modèle par modèle.
+    vus = {}
+    echecs_types = []
+    codes = list(MODELE)
+    for i, code in enumerate(codes):
+        if reste() < 3:
+            echecs_types.append(f"{code} : passe trop longue, type sauté")
+            continue
+        if i:
+            attendre(PAUSE)
+        try:
+            for a in demander(API + code, code):
+                if en_vol(a) and a.get("hex"):
+                    vus[a["hex"]] = (code, a)
+        except RuntimeError as e:
+            echecs_types.append(str(e))
+    echecs = echecs_types
+
+    # 2. Les militaires et les anonymes : une demande chacun, après les jets (les jets d'abord).
     mil, pia = {}, {}
     mil_ok = pia_ok = False
     for url, nom, cible in ((API_MIL, "militaires", mil), (API_PIA, "anonymes", pia)):
-        if cible is pia:
-            attendre(PAUSE)
+        if reste() < 3:
+            extras_echecs.append(f"{nom} : passe trop longue, sauté")
+            continue
+        attendre(PAUSE)
         try:
             for a in demander(url, nom):
                 if en_vol(a) and a.get("hex"):
@@ -213,23 +233,6 @@ def main():
                 pia_ok = True
         except RuntimeError as e:
             extras_echecs.append(str(e))
-
-    # 2. Les jets privés, modèle par modèle.
-    vus = {}
-    echecs_types = []
-    codes = list(MODELE)
-    for code in codes:
-        if reste() < 3:
-            echecs_types.append(f"{code} : passe trop longue, type sauté")
-            continue
-        attendre(PAUSE)
-        try:
-            for a in demander(API + code, code):
-                if en_vol(a) and a.get("hex"):
-                    vus[a["hex"]] = (code, a)
-        except RuntimeError as e:
-            echecs_types.append(str(e))
-    echecs = echecs_types
 
     if len(echecs_types) > len(codes) // 2:
         # adsb.lol ne répond pas : on garde le dernier relevé, on note l'échec, on n'ajoute rien à l'historique.

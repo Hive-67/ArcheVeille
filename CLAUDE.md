@@ -15,8 +15,8 @@ Lis d'abord `regles-communes.md` et `profil.md` du dépôt `Hive-67/LaRuche`, br
 ## Règles propres au projet
 
 - Données d'avions : **adsb.lol seulement** (licence ODbL, qui permet la vente, à condition de la citer). Jamais OpenSky, ADS-B Exchange, airplanes.live ni adsb.fi : usage commercial interdit.
-- Peu de requêtes : une passe toutes les 15 minutes, une requête par type (plus une pour les militaires et une pour les anonymes), espacées de 2,5 s. On ne mitraille pas un service gratuit. adsb.lol répond 429 aux rafales : le script attend et réessaie.
-- Une passe dure 5 minutes au plus, attentes comprises (le workflow coupe à 8) : même ratée, elle range un relevé marqué « partiel » ou « erreur ».
+- Peu de requêtes : une passe toutes les 15 minutes, une requête par type (plus une pour les militaires et une pour les anonymes), espacées de 3 s. On ne mitraille pas un service gratuit. adsb.lol répond 429 aux rafales : le script attend et réessaie.
+- Une passe dure 7 minutes au plus, attentes comprises (le workflow coupe à 8) : même ratée, elle range un relevé marqué « partiel » ou « erreur ». Les jets passent d'abord, les militaires et les anonymes ensuite (07/11/2026 : avec 69 demandes, une passe de 5 minutes ne suffisait plus après un refus 429).
 - Ni immatriculation ni indicatif dans les données (décision du CC, 03/11/2026) : la Veille compte une vague, elle ne suit personne.
 - Les commits du robot (`robot · relevé`) ne touchent que `donnees/`. Aucune clé ni secret dans le dépôt.
 - Pas de dépendance installée : la bibliothèque standard de Python suffit.
