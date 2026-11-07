@@ -1,0 +1,62 @@
+{
+ "maj": "2026-11-07T07:26:54Z",
+ "statut": "ok",
+ "total": 26,
+ "regions": {
+  "europe": 16,
+  "amerique_du_nord": 4,
+  "reste_du_monde": 6
+ },
+ "types": {
+  "C17": 6,
+  "C30J": 2,
+  "GLF5": 2,
+  "K35R": 2,
+  "A148": 1,
+  "A321": 1,
+  "AN30": 1,
+  "B190": 1,
+  "B738": 1,
+  "C130": 1,
+  "C27J": 1,
+  "C295": 1,
+  "D228": 1,
+  "EC45": 1,
+  "F900": 1,
+  "P3": 1
+ },
+ "note": "Seulement les avions militaires qui émettent : beaucoup coupent leur transpondeur en opération, et presque aucun drone n'apparaît.",
+ "source": {
+  "nom": "adsb.lol",
+  "lien": "https://adsb.lol",
+  "licence": "ODbL"
+ },
+ "avions": [
+  {"type":"A148","modele":"A148","altitude":29050,"region":"europe","lat":54.3,"lon":39.2},
+  {"type":"AN30","modele":"AN30","altitude":15250,"region":"europe","lat":46.0,"lon":26.6},
+  {"type":"C17","modele":"C17","altitude":32325,"region":"europe","lat":51.4,"lon":6.4},
+  {"type":"C17","modele":"C17","altitude":21675,"region":"europe","lat":49.7,"lon":9.1},
+  {"type":"C17","modele":"C17","altitude":36000,"region":"europe","lat":49.8,"lon":13.8},
+  {"type":"C17","modele":"C17","altitude":36000,"region":"europe","lat":46.4,"lon":21.7},
+  {"type":"C17","modele":"C17","altitude":29000,"region":"europe","lat":42.9,"lon":23.9},
+  {"type":"C27J","modele":"C27J","altitude":23975,"region":"europe","lat":58.2,"lon":15.1},
+  {"type":"C295","modele":"C295","altitude":22000,"region":"europe","lat":40.9,"lon":-2.6},
+  {"type":"C30J","modele":"C30J","altitude":27000,"region":"europe","lat":48.6,"lon":1.9},
+  {"type":"D228","modele":"D228","altitude":11425,"region":"europe","lat":45.0,"lon":10.8},
+  {"type":"F900","modele":"F900","altitude":26850,"region":"europe","lat":51.3,"lon":11.8},
+  {"type":"GLF5","modele":"GLF5","altitude":30000,"region":"europe","lat":41.8,"lon":11.6},
+  {"type":"K35R","modele":"K35R","altitude":33000,"region":"europe","lat":52.0,"lon":3.5},
+  {"type":"K35R","modele":"K35R","altitude":33000,"region":"europe","lat":51.7,"lon":4.9},
+  {"type":"P3","modele":"P3","altitude":19975,"region":"europe","lat":40.4,"lon":9.0},
+  {"type":null,"modele":"Inconnu","altitude":25350,"region":"amerique_du_nord","lat":39.3,"lon":-122.9},
+  {"type":null,"modele":"Inconnu","altitude":22250,"region":"amerique_du_nord","lat":39.0,"lon":-122.6},
+  {"type":"C17","modele":"C17","altitude":8300,"region":"amerique_du_nord","lat":33.9,"lon":-101.4},
+  {"type":"EC45","modele":"EC45","altitude":5475,"region":"amerique_du_nord","lat":32.7,"lon":-116.5},
+  {"type":"A321","modele":"A321","altitude":31575,"region":"reste_du_monde","lat":26.2,"lon":87.1},
+  {"type":"B190","modele":"B190","altitude":25000,"region":"reste_du_monde","lat":30.2,"lon":131.2},
+  {"type":"B738","modele":"B738","altitude":12375,"region":"reste_du_monde","lat":24.9,"lon":121.6},
+  {"type":"C130","modele":"C130","altitude":10975,"region":"reste_du_monde","lat":14.6,"lon":100.9},
+  {"type":"C30J","modele":"C30J","altitude":24250,"region":"reste_du_monde","lat":-28.3,"lon":152.6},
+  {"type":"GLF5","modele":"GLF5","altitude":40000,"region":"reste_du_monde","lat":15.1,"lon":120.7}
+ ]
+}
