@@ -1,7 +1,7 @@
 {
  "maj": "2026-11-11T10:33:43Z",
- "statut": "ok",
- "erreur": null,
+ "statut": "erreur",
+ "erreur": "61 requêtes sur 67 en échec. Exemple : GLF3 : <urlopen error _ssl.c:983: The handshake operation timed out>",
  "total": 195,
  "regions": {
   "europe": 125,
@@ -40,6 +40,7 @@
   "lien": "https://adsb.lol",
   "licence": "ODbL"
  },
+ "derniere_tentative": "2026-11-11T18:04:36Z",
  "avions": [
   {"type":"CL30","modele":"Bombardier","altitude":40975,"region":"europe","lat":46.6,"lon":-2.6},
   {"type":"CL35","modele":"Bombardier","altitude":22000,"region":"europe","lat":52.0,"lon":3.0},
