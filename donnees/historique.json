@@ -34,5 +34,6 @@
   {"t":"2026-11-11T02:55:56Z","total":311,"europe":15,"amerique_du_nord":264,"reste_du_monde":32,"complet":true,"anonymes":4,"militaires":108},
   {"t":"2026-11-11T10:33:43Z","total":195,"europe":125,"amerique_du_nord":33,"reste_du_monde":37,"complet":true,"anonymes":0,"militaires":115},
   {"t":"2026-11-12T00:45:41Z","total":606,"europe":10,"amerique_du_nord":568,"reste_du_monde":28,"complet":true,"anonymes":5,"militaires":84},
-  {"t":"2026-11-12T08:01:55Z","total":206,"europe":130,"amerique_du_nord":44,"reste_du_monde":32,"complet":true,"anonymes":0,"militaires":97}
+  {"t":"2026-11-12T08:01:55Z","total":206,"europe":130,"amerique_du_nord":44,"reste_du_monde":32,"complet":true,"anonymes":0,"militaires":97},
+  {"t":"2026-11-12T16:49:32Z","total":1097,"europe":141,"amerique_du_nord":928,"reste_du_monde":28,"complet":true,"anonymes":9,"militaires":246}
 ]
