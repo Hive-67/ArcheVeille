@@ -1,7 +1,7 @@
 {
  "maj": "2026-11-15T15:27:39Z",
- "statut": "partiel",
- "erreur": null,
+ "statut": "erreur",
+ "erreur": "40 requêtes sur 67 en échec. Exemple : GA5C : <urlopen error _ssl.c:1063: The handshake operation timed out>",
  "total": 852,
  "regions": {
   "europe": 128,
@@ -50,6 +50,7 @@
   "lien": "https://adsb.lol",
   "licence": "ODbL"
  },
+ "derniere_tentative": "2026-11-15T20:31:22Z",
  "avions": [
   {"type":"CL35","modele":"Bombardier","altitude":45000,"region":"europe","lat":47.1,"lon":-4.1},
   {"type":"CL35","modele":"Bombardier","altitude":45000,"region":"europe","lat":39.8,"lon":-3.2},
