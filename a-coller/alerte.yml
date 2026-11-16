@@ -1,0 +1,50 @@
+name: Alerte
+
+# Hive répond dans une issue : « vigilance », « alerte », « fin » ou « essai » sur la première ligne,
+# son message (facultatif) sur la ligne suivante. Seules ses réponses comptent (propriétaire du dépôt) ;
+# le texte n'est jamais exécuté : il passe par une variable et alerte.py le lit comme du texte.
+# L'alerte est signée avec la clé du secret ARCHE_ALERTE_CLE (créée par Hive, jamais dans un dépôt).
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: releve
+  cancel-in-progress: false
+
+jobs:
+  alerte:
+    if: ${{ !github.event.issue.pull_request && github.event.comment.user.login == github.repository_owner && github.event.comment.author_association == 'OWNER' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Signer l'alerte
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARCHE_ALERTE_CLE: ${{ secrets.ARCHE_ALERTE_CLE }}
+          PROPRIETAIRE: ${{ github.repository_owner }}
+          AUTEUR: ${{ github.event.comment.user.login }}
+          ASSOCIATION: ${{ github.event.comment.author_association }}
+          TEXTE: ${{ github.event.comment.body }}
+          COMMENTAIRE: ${{ github.event.comment.id }}
+          ISSUE: ${{ github.event.issue.number }}
+          TITRE: ${{ github.event.issue.title }}
+        run: python3 alerte.py reponse
+
+      - name: Ranger l'alerte
+        run: |
+          git config user.name "ArcheVeille robot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add donnees/alerte.json
+          if git diff --cached --quiet; then
+            echo "Rien n'est parti."
+            exit 0
+          fi
+          git commit -m "robot · alerte"
+          git push || (git pull --rebase && git push)

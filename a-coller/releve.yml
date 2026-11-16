@@ -1,0 +1,51 @@
+name: Relevé des jets privés
+
+# Le relevé, toutes les 15 minutes. Le réveil de GitHub (« schedule ») est « au mieux » : il dort souvent.
+# Le vrai réveil vient de l'extérieur : cron-job.org appelle « workflow_dispatch » toutes les 15 minutes,
+# avec un jeton qui n'a de droits que sur les Actions de ce dépôt (ordre Arche 2026-11-16-7).
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - releve.py
+      - alerte.py
+      - .github/workflows/releve.yml
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: releve
+  cancel-in-progress: false
+
+jobs:
+  releve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Relevé chez adsb.lol
+        run: python3 releve.py
+
+      # Le même calcul que la page Veille. Si le niveau monte : une issue pour Hive. Jamais rien vers les téléphones.
+      - name: Le calcul de l'alerte (prévient Hive seulement)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 alerte.py calcul
+
+      - name: Ranger le relevé
+        run: |
+          git config user.name "ArcheVeille robot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add donnees/
+          if git diff --cached --quiet; then
+            echo "Rien de neuf."
+            exit 0
+          fi
+          git commit -m "robot · relevé"
+          git push || (git pull --rebase && git push)
