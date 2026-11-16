@@ -1,7 +1,7 @@
 {
  "maj": "2026-11-16T07:07:26Z",
- "statut": "ok",
- "erreur": null,
+ "statut": "erreur",
+ "erreur": "53 requêtes sur 67 en échec. Exemple : GL7T : passe trop longue",
  "total": 149,
  "regions": {
   "europe": 75,
@@ -40,6 +40,7 @@
   "lien": "https://adsb.lol",
   "licence": "ODbL"
  },
+ "derniere_tentative": "2026-11-16T17:02:59Z",
  "avions": [
   {"type":"CL30","modele":"Bombardier","altitude":43000,"region":"europe","lat":44.5,"lon":5.6},
   {"type":"CL35","modele":"Bombardier","altitude":19975,"region":"europe","lat":49.4,"lon":2.0},
